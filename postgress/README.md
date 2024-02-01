@@ -906,3 +906,6 @@ default_text_search_config = 'pg_catalog.english'
 
 # Add settings for extensions here
 ```
+
+## 资料
+1. https://www.jetbrains.com/help/datagrip/2023.3/connectivity-problems.html?utm_source=from_product&utm_medium=help_link&utm_campaign=DB&utm_content=2023.3#step-4-check-if-the-connection-with-ssh-ssl
