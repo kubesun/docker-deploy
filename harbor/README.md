@@ -12,14 +12,8 @@ export HOSTNAME="192.168.2.101"
 ```shell
 sed -i "s/hostname: 192.168.2.101/hostname: $HOSTNAME/" ./harbor.yml
 cat -n ./harbor.yml | grep hostname
-```
 
-### 生成证书
-> harbor默认使用HTTPS, docker默认要求HTTPS的才可以登录, 否则需要再docker的配置文件配置添加该Addr才可以登录
-
-在生成证书签名请求文件时，您需要填写一些证书信息，如国家、省份、组织、通用名称等。不懂直接按回车即可
-```shell
-openssl req -new -key harbor.key -out harbor.csr
+./install.sh
 ```
 
 查看安装结果
@@ -31,7 +25,7 @@ docker ps
 - 浏览器访问:
 输入你定义的`$HOSTNAME`加上`:5443/harbor`, 例如`https://192.168.2.101:5443/harbor`
 
-- 使用命令行?:
+- 使用命令行:
 ```shell
 curl --insecure https://$HOSTNAME:5443/harbor
 ```
@@ -53,4 +47,8 @@ export CERTIFICATE="/home/harbor/harbor/harbor.crt"
 export PRIVATE_KEY="/home/harbor/harbor/harbor.key"
 export HARBOR_ADMIN="admin"
 export HARBOR_ADMIN_PASSWORD="Harbor12345"
+
+## 测试
+1. 测试打包: 进入examples/gin目录,执行start.sh
+2. 测试推送: 
 ```

@@ -1,8 +1,26 @@
+#!/bin/bash
+
+set -x
+mv ./harbor.yaml ./harbor
+
+export HARBOR_ADDR="192.168.0.101:5080"
+mkdir -p $HARBOR_HOME/logs
+mkdir -p $HARBOR_HOME/data
+
+vi /etc/docker/daemon.json
+
+# 添加这段:
+# "insecure-registries":["$HARBOR_HOST"]
+
+systemctl daemon-reload
+systemctl restart docker
+
+cat > harbor.yaml <<EOF
 # Configuration file of Harbor
 
 # The IP address or hostname to access admin UI and registry service.
 # DO NOT use localhost or 127.0.0.1, because Harbor needs to be accessed by external clients.
-hostname: 192.168.2.101
+hostname: $HOSTNAME
 
 # http related config
 http:
@@ -10,12 +28,12 @@ http:
   port: 5080
 
 # https related config
-https:
-  # https port for harbor, default is 443
-  port: 5443
-  # The path of cert and key files for nginx
-  certificate: /home/harbor/harbor/harbor.crt
-  private_key: /home/harbor/harbor/harbor.key
+#https:
+#  # https port for harbor, default is 443
+#  port: 5443
+#  # The path of cert and key files for nginx
+#  certificate: $HARBOR_HOME/ssl/harbor.crt
+#  private_key: $HARBOR_HOME/ssl/harbor.key
 
 # # Uncomment following will enable tls communication between all harbor components
 # internal_tls:
@@ -52,7 +70,7 @@ database:
   conn_max_idle_time: 0
 
 # The default data volume
-data_volume: /home/harbor/data
+data_volume: $HARBOR_HOME/data
 
 # Harbor Storage settings by default is using /data dir on local filesystem
 # Uncomment storage_service setting If you want to using external storage
@@ -305,3 +323,9 @@ cache:
 #   # suggest switch provider to redis if you were ran into the db connections spike aroud
 #   # the scenario of high concurrent pushing to same project, no improvment for other scenes.
 #   quota_update_provider: redis # Or db
+EOF
+
+chmod +x ./harbor/install.sh
+./harbor/install.sh
+
+set +x
