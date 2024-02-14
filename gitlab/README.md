@@ -171,6 +171,9 @@ ls -alh ~/.ssh
 ssh-keygen -t rsa -C "gitlab" -f ~/.ssh/gitlab_rsa
 ```
 
+### **在Gitlab添加本机的`xxx.pub`秘钥**
+![./img/1.png]
+
 ### 添加私钥到本机SSH
 
 添加私钥，指向私钥文件
