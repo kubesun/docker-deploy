@@ -1,0 +1,33 @@
+concurrent = 1
+check_interval = 0
+shutdown_timeout = 0
+
+[session_server]
+  session_timeout = 1800
+
+[[runners]]
+  name = "config.toml"
+  url = "http://192.168.2.158:7080"
+  id = 4
+  token = "glrt-vx2s1PxD2L9zzfZ_MAET"
+  token_obtained_at = 2024-02-15T08:26:51Z
+  token_expires_at = 0001-01-01T00:00:00Z
+  # 如果ci文件需要docker命令, 就在executor添加docker
+  # 如果只是编写shell, 添加shell即可, 这是注册时自动配的, 一般不会改
+  executor = "docker"
+  [runners.cache]
+    MaxUploadedArchiveSize = 0
+  [runners.docker]
+    tls_verify = false
+    image = "docker:24.0.5" # 与宿主机保持相同的版本最好
+    privileged = true # 如果需要Docker in Docker, 那么就需要特权模式
+    disable_entrypoint_overwrite = false
+    oom_kill_disable = false
+    disable_cache = false
+    # 如果不在gitlab.ci.yaml文件的variables变量列表声明:
+    # DOCKER_TLS_CERTDIR: ""
+    # DOCKER_HOST: tcp://docker:2375
+    # 那么就需要添加"/var/run/docker.sock:/var/run/docker.sock"
+    volumes = ["/cache", "/var/run/docker.sock:/var/run/docker.sock"]
+    shm_size = 0
+    network_mtu = 0

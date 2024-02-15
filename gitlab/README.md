@@ -168,11 +168,15 @@ ls -alh ~/.ssh
 
 不存在生成密钥:
 ```bash
-ssh-keygen -t rsa -C "gitlab" -f ~/.ssh/gitlab_rsa
+ssh-keygen -t ed25519
 ```
 
+或者:
+```shell
+ssh-keygen -t ed25519 -C "gitlab" -f ~/.ssh/gitlab_rsa
+```
 ### **在Gitlab添加本机的`xxx.pub`秘钥**
-![Image](./img/1.png)
+![[img/Pasted image 20240214134828.png]]
 
 ### 添加私钥到本机SSH
 
@@ -224,37 +228,145 @@ sudo docker exec -it gitlab grep 'Password:' /etc/gitlab/initial_root_password
 
 ## [可选]Gitlab-Runner
 
-1. 安装gitlab-runner
-   [参考](https://docs.gitlab.com/runner/install/docker.html)
+### 安装gitlab-runner
+[参考](https://docs.gitlab.com/runner/install/docker.html)
+
+[注意事项](https://www.cnblogs.com/newton/p/17408489.html)
+
 ```bash
-mkdir -p /data/gitlab-runner/runner3/config
-
+img_name="runner4"
+config="/mnt/data/158/gitlab-runner/${img_name}/config"
+mkdir -p $config
 docker run \
--d \
---name runner3 \
---restart always \
--v /data/gitlab-runner/runner3/config:/etc/gitlab-runner \
--v /var/run/docker.sock:/var/run/docker.sock \
-gitlab/gitlab-runner:latest
+  -d \
+  -v $config:/etc/gitlab-runner \
+  --name $img_name \
+  --restart always \
+  --privileged=true \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  gitlab/gitlab-runner
 ```
+参数说明:
+- -v $config:/etc/gitlab-runner: 挂载runner的数据存储目录
+- --name $img_name: 设置runner的docker名称
+- --restart always: 重启策略, 不管遇到什么错误都总是重启
+- --privileged=true: 特权模式, 当在gitlab CI中使用docker命令的[Docker in Docker](https://docs.gitlab.com/ee/ci/docker/using_docker_build.html), 都必须要使用特权模式 
+-  -v /var/run/docker.sock:/var/run/docker.sock: 挂载宿主机的Docker, 这样就可以在runner里面不需要再次下载docker就可以调用docker命令
+- gitlab/gitlab-runner: gitlab/gitlab-runner版本, 不加tag就是latest最新的版本
 
-2. 注册CICD通道
+### 注册CICD通道
    [参考](https://docs.gitlab.com/runner/register/index.html#docker)
    `/data/gitlab-runner/confi`替换为你的`gitlab-runner/config`配置文件路径
+
+建议注册一个Docker in Docker的Runner与你项目的环境, 
+这里是前后项目, 使用到了go, node, docker这三个runner
+
+#### 容器外注册
 ```bash
-docker run \
--it \
--v /data/gitlab-runner/runner2/config:/etc/gitlab-runner \
-gitlab/gitlab-runner:latest register
+# Docker in Docker
+# https://docs.gitlab.com/ee/ci/docker/using_docker_build.html
+sudo gitlab-runner register -n \
+  --url "https://gitlab.com/" \
+  --registration-token REGISTRATION_TOKEN \
+  --executor docker \
+  --description "Docker in Docker 24.0.5" \
+  --docker-image "docker:24.0.5" \
+  --docker-privileged \ # privileged mode
+  --docker-volumes "/certs/client" \
+
+# Node
+docker exec -it $img_name register \
+  --non-interactive \
+  --registration-token REGISTRATION_TOKEN \
+  --url $url \
+  --token "$token" \
+  --executor "docker" \
+  --docker-image node:18-alpine3.19 \
+  --description "node" \
+
+# Go
+docker exec -it $img_name register \
+  --registration-token REGISTRATION_TOKEN \
+  --non-interactive \
+  --url $url \
+  --token "$token" \
+  --executor "docker" \
+  --docker-image golang:alpine \
+  --description "go"
+```
+参数介绍:
+- --registration-token REGISTRATION_TOKEN: 你在Gitlab界面创建Runner的Token
+- --url $url: 你的Gitlab地址, 包含http, 例如: http://192.168.2.158:7080
+- --executor docker: executor, 一般为shell或者docker和kubernetes居多, 这里是docker
+- --docker-image "docker:24.0.5": 要按照的docker hub的镜像名, 包含版本, 这里是docker:24.0.5
+- --docker-volumes "/certs/client": 如果要与其它的容器进行TLS通信, 这是必须的, 直接添加, 不需要修改
+- -c value, --config value                   # 指定配置文件
+- --template-config value                    # 指定模板配置文件
+- --tag-list value                           # 指定runner的标签列表，逗号分隔
+- -n, --non-interactive                      # 无交互进行runner注册
+- --leave-runner                             # 如果注册失败，不用删除runner
+- -r value, --registration-token value       # runner的注册token
+- --run-untagged                             # 注册运行未加标签的构建，默认当标签列表为空时值为true
+- --locked                                   # 锁定runner 默认true，锁定后就不能运行 job 了
+- --access-level value                       # 设置访问等级 not_protected or ref_protected; 默认 not_protected
+- --maximum-timeout value                    # 为作业设置最大运行超时时间 默认零 单位秒
+- --paused                                   # 设置runner为 paused,默认 'false'
+- --name value, --description value          # Runner 名称
+- --limit value                              # 程序处理的最大构建数量default: "0"
+- --output-limit value                       # 最大的构建大小单位kb default: "0"
+- --request-concurrency value                # 作业请求的最大并发数 default: "0"
+- -u value, --url value                      # GitlabCI服务器地址
+- -t value, --token value                    # GitlabCI服务器token
+
+### Gitlab命令行
+- --user指定将用于执行构建的用户
+- --working-directory  指定将使用 **Shell** executor 运行构建时所有数据将存储在其中的根目录
+- gitlab-runner install --user=gitlab-runner --working-directory=/home/gitlab-runner
+- gitlab-runner uninstall #该命令停止运行并从服务中卸载 GitLab Runner。
+- gitlab-runner start     #该命令启动 GitLab Runner 服务。
+- gitlab-runner stop      #该命令停止 GitLab Runner 服务。
+- gitlab-runner restart   #该命令将停止，然后启动 GitLab Runner 服务。
+- gitlab-runner status #此命令显示 GitLab Runner 服务的状态。当服务正在运行时，退出代码为零；而当服务未运行时，退出代码为非零。
+
+#### 容器内交互式注册
+1. 进入容器
+```
+docker exec -it <image-name> sh
 ```
 
-3. 查看是否生成配置文件
-
-```bash
-cat /data/gitlab-runner/config/config.toml
+2. 注册, 输入你在gitlab创建Runner的命令
 ```
 
-4. (可选)添加Docker镜像加速
+```
+3. 输入gitlab地址, 例如: http://192.168.2.158:7080
+```shell
+
+```
+4. 输入配置文件名, 例如: config.toml, 默认即可
+
+5. 输入executor, 如果是纯shell, 输入shell, 需要docker就填docker, 推荐填docker
+
+6. 校验与重启
+```shell
+gitlab-runner verify
+gitlab-runner restart
+```
+7. 退出容器
+```
+exit
+```
+8. 检查runner日志是否正常
+```
+docker logs -f <image-name>
+```
+
+### 编写配置文件(可选)
+1. 查看是否生成配置文件
+```bash
+cat 你的runner目录/config.toml
+```
+
+2. (可选)添加Docker镜像加速
    关键字: `extra_hosts`
    [参考](https://docs.gitlab.com/runner/configuration/advanced-configuration.html)
    在`vi /<gitlab_runner_path>/config.toml`文件的`[runners.docker]`下添加
@@ -273,32 +385,22 @@ cat /data/gitlab-runner/config/config.toml
 	extra_hosts =["docker.mirrors.sjtug.sjtu.edu.cn:127.0.0.1"]
 ```
 
-5. 重启读取配置文件
-```bash
-docker restart gitlab-runner
-```
-
-6. 查看运行状态
-```bash
-docker logs gitlab-runner
-```
-
 遇到登录问题需要修改配置文件
 ```yml
-  image: docker:stable  
-  stage: build  
-  script:  
-    # 这里的变量会自动获取你当前推送代码的gitlab用户和密码以及仓库地址  
-    - docker login --username $CI_REGISTRY_USER --password $CI_REGISTRY_PASSWORD $CI_REGISTRY  
-    # 这里的变量就是我们全局配置定义的了  
-    - docker build -t $IMAGE_FULL_NAME .  
-    - docker push $IMAGE_FULL_NAME  
-    - rm -rf target  
-    - docker rmi $IMAGE_FULL_NAME  
-  only:  
-    - master  
-  tags:  
-    - test
+  image: docker:stable  
+  stage: build  
+  script:  
+    # 这里的变量会自动获取你当前推送代码的gitlab用户和密码以及仓库地址  
+    - docker login --username $CI_REGISTRY_USER --password $CI_REGISTRY_PASSWORD $CI_REGISTRY  
+    # 这里的变量就是我们全局配置定义的了  
+    - docker build -t $IMAGE_FULL_NAME .  
+    - docker push $IMAGE_FULL_NAME  
+    - rm -rf target  
+    - docker rmi $IMAGE_FULL_NAME  
+  only:  
+    - main # 只在当前分支执行runner作业 
+  tags:
+    - test
 ```
 
 gitlab界面查看是否有这个CICD通道.
@@ -307,6 +409,17 @@ gitlab界面查看是否有这个CICD通道.
 
 .gitlab-ci.yml
 [文档](https://docs.gitlab.com/ee/ci/yaml/index.html)
+
+如果涉及到需要保密的变量, 可以在 项目-> 设置 -> CI/CD -> 变量 添加变量
+![img_1.png](./img/img.png)
+
+然后再CI文件这样引用: ${var} 添加, 例如变量为 HARBOR_ADDRESS, 可以这样写: `$HARBOR_ADDRESS` 或者 `${HARBOR_ADDRESS}`, 示例:
+```yaml
+  script:
+    - docker tag $IMAGE_TAG $HARBOR_ADDRESS/$HARBOR_REPO/$PROJECT_NAME:$IMAGE_TAG
+    - docker push $HARBOR_ADDRESS/$HARBOR_REPO/$PROJECT_NAME:$IMAGE_TAG
+```
+
 ```
 stages:
   - init
@@ -408,3 +521,11 @@ Enqueued ActionMailer::DeliveryJob (Job ID: e562694d-2a1b-4bad-843b-d8567ac51077
 => true
 irb(main):005:0> quit
 ```
+
+## 资料
+1. [注意事项1](https://www.cnblogs.com/newton/p/17408489.html)
+1. [注意事项2](https://blog.csdn.net/weixin_54104864/article/details/131381160)
+2. .gitlab-ci.yaml配置解析 https://developer.aliyun.com/article/1313269
+2. [.gitlab-ci.yaml全部配置](https://docs.gitlab.com/ee/ci/yaml/index.html)
+3. runner高级配置 https://docs.gitlab.com/runner/configuration/advanced-configuration.html
+4. docker运行runner https://docs.gitlab.com/runner/install/docker.html

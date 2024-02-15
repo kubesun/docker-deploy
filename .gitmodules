@@ -1,0 +1,3 @@
+[submodule "gitlab/exmple/gitops-argo"]
+	path = gitlab/exmple/gitops-argo
+	url = git@github.com:lisa-sum/gitops-argo.git
