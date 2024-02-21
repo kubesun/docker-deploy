@@ -1,7 +1,3 @@
-module test-kafka
+module github.com/lisa-sum/confluent-kafka-go
 
 go 1.22.0
-
-require github.com/confluentinc/confluent-kafka-go v1.9.2
-
-require github.com/confluentinc/confluent-kafka-go/v2 v2.3.0 // indirect
