@@ -4,3 +4,6 @@
 [submodule "kafka/client/confluent-kafka-go"]
 	path = kafka/client/confluent-kafka-go
 	url = git@github.com:lisa-sum/confluent-kafka-go.git
+[submodule "kafka/client/segmentio-kafka-go"]
+	path = kafka/client/segmentio-kafka-go
+	url = git@github.com:lisa-sum/segmentio-kafka-go.git
