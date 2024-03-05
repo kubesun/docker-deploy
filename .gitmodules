@@ -7,3 +7,6 @@
 [submodule "kafka/client/segmentio-kafka-go"]
 	path = kafka/client/segmentio-kafka-go
 	url = git@github.com:lisa-sum/segmentio-kafka-go.git
+[submodule "redis/redis-sentinel"]
+	path = redis/redis-sentinel
+	url = git@github.com:lisa-sum/redis-sentinel.git
