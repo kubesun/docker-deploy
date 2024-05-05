@@ -36,10 +36,12 @@ cp $SSL_DIR/*.key $SSL_DIR/nginx.key
 # https://github.com/macbre/docker-nginx-http3
 docker pull ghcr.io/macbre/nginx-http3:latest
 
+export server_name="server_name"
+
 cat > /home/nginx/conf/nginx.conf <<EOF
 server {
     listen 80;
-    server_name server_name; # server_name
+    server_name $server_name; # server_name
     return 301 https://host$request_uri; # webside
 }
 

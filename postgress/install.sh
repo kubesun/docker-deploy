@@ -13,7 +13,7 @@ docker run \
 -e POSTGRES_USER="root" \
 -e POSTGRES_PASSWORD="msdnmm" \
 -e POSTGRES_DB=postgres \
--p 5432:5432 \
+-p 0.0.0.0:5432:5432 \
 postgres
 
 set +x

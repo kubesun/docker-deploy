@@ -17,24 +17,4 @@ sudo gitlab-runner register -n \
   --docker-privileged \
   --docker-volumes "/certs/client" \
 
-# Node
-docker exec -it $img_name register \
-  --non-interactive \
-  --url $url \
-  --token "$token" \
-  --executor "docker" \
-  --docker-image node:18-alpine3.19 \
-  --description "node" \
-
-# Go
-docker exec -it $img_name register \
-  --non-interactive \
-  --url $url \
-  --token "$token" \
-  --executor "docker" \
-  --docker-image golang:alpine \
-  --description "go"
-
-docker restart $img_name
-
 set +x
