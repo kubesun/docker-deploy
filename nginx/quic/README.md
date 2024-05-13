@@ -22,7 +22,7 @@
 2. 定义`WEB_DIR`目录, 默认是`/home/web`, 该目录是前端静态文件, 只能是原生的js, html, css, 是框架(如果有)编译后的文件
    示例:
    ```shell
-   export WEB_DIR="/home/web"
+   export WEB_DIR="/home/nginx"
    ```
 
 3. 上传ssl文件, 把`nginx.crt`PEM证书与`nginx.key`证书密钥文件到`/home/nginx/ssl`目录下, 确保只有一个文件后缀,

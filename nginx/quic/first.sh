@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# DOMAIN="lookeke.cn"
+DOMAIN="lookeke.com"
+server_name=$DOMAIN
+
 if [ -z "${DOMAIN}" ]; then
     exit 1
     echo "请编写你的域名"
@@ -12,17 +16,17 @@ fi
 
 # 判断 WEB_DIR 变量是否已定义，如果未定义，则设置默认值
 if [ -z "${WEB_DIR}" ]; then
-    export WEB_DIR="/home/web"
+    export WEB_DIR="${NGINX_DIR}/html"
 fi
 
 # 判断 CONF_DIR 变量是否已定义，如果未定义，则设置默认值
 if [ -z "${CONF_DIR}" ]; then
-    export CONF_DIR="/home/nginx/conf"
+    export CONF_DIR="${NGINX_DIR}/conf"
 fi
 
 # 判断 SSL_DIR 变量是否已定义，如果未定义，则设置默认值
 if [ -z "${SSL_DIR}" ]; then
-    export SSL_DIR="/home/nginx/ssl"
+    export SSL_DIR="${NGINX_DIR}/ssl"
 fi
 
 mkdir -p $WEB_DIR
@@ -30,6 +34,7 @@ mkdir -p $CONF_DIR
 mkdir -p $SSL_DIR
 cd $NGINX_DIR || exit
 
+#SSL_DIR=$(pwd)
 cp $SSL_DIR/*.crt $SSL_DIR/nginx.crt
 cp $SSL_DIR/*.key $SSL_DIR/nginx.key
 
@@ -38,11 +43,11 @@ docker pull ghcr.io/macbre/nginx-http3:latest
 
 export server_name="server_name"
 
-cat > /home/nginx/conf/nginx.conf <<EOF
+cat > ${CONF_DIR}/nginx.conf <<EOF
 server {
     listen 80;
     server_name $server_name; # server_name
-    return 301 https://host$request_uri; # webside
+    return 301 https://${DOMAIN}; # webside
 }
 
 server {
@@ -82,12 +87,14 @@ server {
         index  index.html index.htm default.html default.htm;  # 设置默认index首页文件
     }
 }
-
 EOF
 
 docker stop nginx-quic || true
 docker rm nginx-quic || true
 
+# WEB_DIR=""
+# CONF_DIR=""
+# SSL_DIR=""
 docker run -itd \
 --name nginx-quic \
 -v ${WEB_DIR}:/etc/nginx/html \
@@ -99,4 +106,4 @@ docker run -itd \
 ghcr.io/macbre/nginx-http3
 
 echo "正在查看日志, 按 Ctrl + C 退出"
-docker logs -f nginx-quic
+docker logs nginx-quic | head -n 10
