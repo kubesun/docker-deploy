@@ -1,0 +1,69 @@
+# 接收器
+# 在启动otel-collector的服务器上所要接收的遥测数据
+# 例如: otlp, kafka, opencensus, zipkin
+receivers:
+  # 收集otlp协议
+  otlp:
+    protocols:
+      # 在本机启动grpc收集器, 收集使用gRPC传输的遥测数据
+      grpc:
+      #   endpoint: localhost:4317
+      # 在本机启动http收集器, 收集json类型的遥测数据
+      http:
+      #   endpoint: localhost:4318
+
+# 处理器
+# 将收集到的遥测数据进行处理
+# 例如: 过滤, 更新, 添加指标
+processors:
+  probabilistic_sampler:
+    hash_seed: 22
+    sampling_percentage: 100
+  batch:
+    timeout: 100ms
+
+# 导出器
+# 要导出到的后端服务URL
+# 例如Jaeger, Prometheus, Loki
+exporters:
+  otlp/jaeger:
+    #endpoint: 159.75.231.54:4317
+    endpoint: 8.141.10.44:4317
+    tls:
+      # 是否使用不安全的连接, 即HTTP明文传输
+      insecure: true
+      # TLS证书:
+      #cert_file: cert.pem
+      #key_file: cert-key.pem
+
+#  扩展器
+# 扩展器是可选组件，用于扩展收集器的功能，以完成与处理遥测数据不直接相关的任务。
+# 例如，您可以添加用于收集器运行状况监控、服务发现或数据转发等的扩展。
+extensions:
+  health_check:
+  pprof:
+  zpages:
+  memory_ballast:
+    size_mib: 512
+
+# 服务
+# https://opentelemetry.io/zh/docs/collector/configuration/#service
+# 该 service 部分用于根据接收器、处理器、导出器和扩展部分中的配置配置在收集器中启用的组件。
+# 如果配置了组件，但未在 service 该部分中定义，则不会启用该组件
+service:
+  extensions: [ health_check, pprof, zpages, memory_ballast ]
+  pipelines:
+    traces:
+      receivers: [ otlp ]
+      processors: [ probabilistic_sampler, batch ]
+      exporters: [ otlp/jaeger ]
+#    metrics:
+#      receivers: [ ]
+#      processors: [ ]
+#      #exporters: [ ]
+#      exporters: [ ]
+#    logs:
+#      receivers: [ ]
+#      processors: [ ]
+#      #exporters: [ ]
+#      exporters: [ ]

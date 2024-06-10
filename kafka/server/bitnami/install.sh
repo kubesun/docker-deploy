@@ -13,6 +13,7 @@ export FILE_NAME="docker-compose.yaml"
 #KAFKA_INTER_BROKER_PASSWORD="msdnmm"
 
 rm -rf $KAFKA_VOLUME_DIR
+docker-compose -f ${FILE_NAME} down
 mkdir -p $KAFKA_VOLUME_DIR
 mkdir -p $KAFKA_VOLUME_DIR/kafka
 mkdir -p $KAFKA_VOLUME_DIR/config
