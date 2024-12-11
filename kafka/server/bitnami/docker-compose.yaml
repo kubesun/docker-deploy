@@ -1,7 +1,7 @@
-version: '3.5'
 services:
+
   kafka:
-    image: bitnami/kafka:latest
+    image: bitnami/kafka:3.8.1
     container_name: kafka
     # 初始化一写数据 写入kafka的数据，会被保存在容器的/tmp/logs目录下
     command:

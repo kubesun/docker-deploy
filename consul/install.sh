@@ -20,8 +20,8 @@ set -o posix errexit -o pipefail
 # -client 指定可以外部连接的地址，0.0.0.0表示外网全部可以连接
 #
 # 除此之外，还可以加上-datacenter参数自定义一个数据中心名，同一个数据中心的节点数据中心名应当指定为一样！
-mkdir -p /home/docker/data/consul
-rm -rf /home/docker/data/consul/*
+mkdir -p /home/docker/consul/data
+rm -rf /home/docker/consul/data/*
 docker stop consul
 docker rm consul
 docker run -itd \
@@ -31,7 +31,7 @@ docker run -itd \
  -p 8302:8302 \
  -p 8500:8500 \
  -p 8600:8600 \
- -v /home/docker/data/consul:/consul/data \
+ -v /home/docker/consul/data:/consul/data \
  hashicorp/consul agent -server -ui -node=n1 -bootstrap-expect=1 -client=0.0.0.0
 docker ps
 docker logs -f consul

@@ -2,6 +2,8 @@
 
 set -x
 
+HARBOR_HOME="/home/docker/harbor"
+
 mkdir -p $HARBOR_HOME/logs
 mkdir -p $HARBOR_HOME/data
 mkdir -p $HARBOR_HOME/ssl

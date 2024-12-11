@@ -6,8 +6,8 @@ declare user
 declare pass
 declare db_port
 
-mkdir -p /home/casdoor
-cd /home/casdoor || exit
+mkdir -p /home/docker/casdoor
+cd /home/docker/casdoor || exit
 
 # https://casdoor.org/zh/docs/basic/try-with-docker/
 
@@ -16,9 +16,9 @@ pass="postgres"
 db_port="5432"
 driverName="postgres"
 host=$(wget -qO- ifconfig.me)
-dbname=tiktok
+dbname=casdoor
 sslmode=disable
-dataSourceName="user=${user} password=${pass} host=${host} port=${db_port} sslmode=$sslmode dbname=$dbname"
+dataSourceName="\"user=${user} password=${pass} host=${host} port=${db_port} sslmode=$sslmode dbname=$dbname\""
 
 # https://github.com/casdoor/casdoor/blob/master/conf/app.conf
 cat > app.conf <<EOF
@@ -62,5 +62,5 @@ EOF
 docker run \
 -itd \
 -p 8000:8000 \
--v /home/casdoor/:/conf \
+-v /home/docker/casdoor/:/conf \
 casbin/casdoor:latest
