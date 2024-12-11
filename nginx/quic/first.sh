@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # DOMAIN="lookeke.cn"
-DOMAIN="lookeke.com"
+DOMAIN="lookeke.top"
 server_name=$DOMAIN
 
 if [ -z "${DOMAIN}" ]; then
