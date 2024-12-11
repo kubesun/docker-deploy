@@ -13,3 +13,6 @@
 [submodule "opentelemetry/client/opentelemetry"]
 	path = opentelemetry/client/opentelemetry
 	url = git@github.com:sunmery/opentelemetry.git
+[submodule "rocketmq/client/go-rocketmq-example"]
+	path = rocketmq/client/go-rocketmq-example
+	url = https://github.com/sunmery/go-rocketmq-example.git
