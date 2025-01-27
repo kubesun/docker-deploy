@@ -13,6 +13,13 @@ set -o posix errexit -o pipefail
 docker network create rocketmq
 VERSION="5.3.1"
 WebUiPort="8088"
+IP="127.0.0.1"
+namesrcAddr="127.0.0.1"
+cat > broker.conf <<EOF
+brokerIP1=$IP
+namesrcAddr=$namesrcAddr:9876
+EOF
+
 cat > compose.yml <<EOF
 services:
 

@@ -16,6 +16,6 @@ services:
       - -node=n1
       - -bootstrap-expect=1
       - -client=0.0.0.0
-networks:
-  app-network:
-    external: true
+#networks:
+#  app-network:
+#    external: true

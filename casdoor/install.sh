@@ -19,7 +19,7 @@ host=$(wget -qO- ifconfig.me)
 dbname=casdoor
 sslmode=disable
 dataSourceName="\"user=${user} password=${pass} host=${host} port=${db_port} sslmode=$sslmode dbname=$dbname\""
-
+echo $host
 # https://github.com/casdoor/casdoor/blob/master/conf/app.conf
 cat > app.conf <<EOF
 appname = casdoor
