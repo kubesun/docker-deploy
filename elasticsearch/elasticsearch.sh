@@ -37,7 +37,7 @@ cp /etc/sysctl.conf{,back}
 cat >> /etc/sysctl.conf <<EOF
 vm.max_map_count=262144
 EOF
-sysctl -p
+sysctl -pe
 sysctl -a|grep vm.max_map_count
 
 set +x

@@ -315,7 +315,7 @@ docker exec -it $img_name register \
 - --limit value                              # 程序处理的最大构建数量default: "0"
 - --output-limit value                       # 最大的构建大小单位kb default: "0"
 - --request-concurrency value                # 作业请求的最大并发数 default: "0"
-- -u value, --url value                      # GitlabCI服务器地址
+- -s value, --url value                      # GitlabCI服务器地址
 - -t value, --token value                    # GitlabCI服务器token
 
 ### Gitlab命令行

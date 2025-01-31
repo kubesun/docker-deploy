@@ -650,7 +650,7 @@ min_wal_size = 80MB
 #log_hostname = off
 #log_line_prefix = '%m [%p] '		# special values:
 					#   %a = application name
-					#   %u = user name
+					#   %s = user name
 					#   %d = database name
 					#   %r = remote host and port
 					#   %h = remote host
@@ -671,7 +671,7 @@ min_wal_size = 80MB
 					#   %q = stop here in non-session
 					#        processes
 					#   %% = '%'
-					# e.g. '<%u%%%d> '
+					# e.g. '<%s%%%d> '
 #log_lock_waits = off			# log lock waits >= deadlock_timeout
 #log_recovery_conflict_waits = off	# log standby recovery conflict waits
 					# >= deadlock_timeout
