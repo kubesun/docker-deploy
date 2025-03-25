@@ -129,7 +129,7 @@ notification:
   webhook_job_http_client_timeout: 3 #seconds
 
 # Log configurations
-log:
+helper:
   # options are debug, info, warning, error, fatal
   level: info
   # configs for logs in local storage
@@ -140,12 +140,12 @@ log:
     # If the M is used, the size is in megabytes, and if G is used, the size is in gigabytes. So size 100, size 100k, size 100M and size 100G
     # are all valid.
     rotate_size: 200M
-    # The directory on your host that store log
-    location: /var/log/harbor
+    # The directory on your host that store helper
+    location: /var/helper/harbor
 
   # Uncomment following lines to enable external syslog endpoint.
   # external_endpoint:
-  #   # protocol used to transmit log to external endpoint, options is tcp or udp
+  #   # protocol used to transmit helper to external endpoint, options is tcp or udp
   #   protocol: tcp
   #   # The host of external endpoint
   #   host: localhost

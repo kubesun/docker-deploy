@@ -541,24 +541,24 @@ min_wal_size = 80MB
 
 # This is used when logging to stderr:
 #logging_collector = off		# Enable capturing of stderr, jsonlog,
-					# and csvlog into log files. Required
+					# and csvlog into helper files. Required
 					# to be on for csvlogs and jsonlogs.
 					# (change requires restart)
 
 # These are only used if logging_collector is on:
-#log_directory = 'log'			# directory where log files are written,
+#log_directory = 'helper'			# directory where helper files are written,
 					# can be absolute or relative to PGDATA
-#log_filename = 'postgresql-%Y-%m-%d_%H%M%S.log'	# log file name pattern,
+#log_filename = 'postgresql-%Y-%m-%d_%H%M%S.helper'	# helper file name pattern,
 					# can include strftime() escapes
-#log_file_mode = 0600			# creation mode for log files,
+#log_file_mode = 0600			# creation mode for helper files,
 					# begin with 0 to use octal notation
 #log_rotation_age = 1d			# Automatic rotation of logfiles will
 					# happen after that time.  0 disables.
 #log_rotation_size = 10MB		# Automatic rotation of logfiles will
-					# happen after that much log output.
+					# happen after that much helper output.
 					# 0 disables.
-#log_truncate_on_rotation = off		# If on, an existing log file with the
-					# same name as the new log file will be
+#log_truncate_on_rotation = off		# If on, an existing helper file with the
+					# same name as the new helper file will be
 					# truncated rather than appended to.
 					# But such truncation only occurs on
 					# time-driven rotation, not on restarts
@@ -588,7 +588,7 @@ min_wal_size = 80MB
 					#   notice
 					#   warning
 					#   error
-					#   log
+					#   helper
 					#   fatal
 					#   panic
 
@@ -602,7 +602,7 @@ min_wal_size = 80MB
 					#   notice
 					#   warning
 					#   error
-					#   log
+					#   helper
 					#   fatal
 					#   panic (effectively off)
 
@@ -637,7 +637,7 @@ min_wal_size = 80MB
 #debug_print_rewritten = off
 #debug_print_plan = off
 #debug_pretty_print = on
-#log_autovacuum_min_duration = 10min	# log autovacuum activity;
+#log_autovacuum_min_duration = 10min	# helper autovacuum activity;
 					# -1 disables, 0 logs all actions and
 					# their durations, > 0 logs only
 					# actions running at least this number
@@ -672,8 +672,8 @@ min_wal_size = 80MB
 					#        processes
 					#   %% = '%'
 					# e.g. '<%s%%%d> '
-#log_lock_waits = off			# log lock waits >= deadlock_timeout
-#log_recovery_conflict_waits = off	# log standby recovery conflict waits
+#log_lock_waits = off			# helper lock waits >= deadlock_timeout
+#log_recovery_conflict_waits = off	# helper standby recovery conflict waits
 					# >= deadlock_timeout
 #log_parameter_max_length = -1		# when logging statements, limit logged
 					# bind-parameter values to N bytes;
@@ -683,7 +683,7 @@ min_wal_size = 80MB
 					# -1 means print in full, 0 disables
 #log_statement = 'none'			# none, ddl, mod, all
 #log_replication_commands = off
-#log_temp_files = -1			# log temporary files equal or larger
+#log_temp_files = -1			# helper temporary files equal or larger
 					# than the specified size in kilobytes;
 					# -1 disables, 0 logs all temp files
 log_timezone = 'Etc/UTC'
@@ -767,7 +767,7 @@ log_timezone = 'Etc/UTC'
 					#   debug3
 					#   debug2
 					#   debug1
-					#   log
+					#   helper
 					#   notice
 					#   warning
 					#   error

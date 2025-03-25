@@ -41,7 +41,7 @@ docker run \
 --name gitlab \
 --restart always \
 -v /data/gitlab/config:/etc/gitlab \
--v /data/gitlab/logs:/var/log/gitlab \
+-v /data/gitlab/logs:/var/helper/gitlab \
 -v /data/gitlab/data:/var/opt/gitlab \
 gitlab/gitlab-ce:latest
 ```
@@ -62,7 +62,7 @@ docker run -d \
 --name gitlab \
 --restart always \
 -v /data/gitlab/config:/etc/gitlab \
--v /data/gitlab/logs:/var/log/gitlab \
+-v /data/gitlab/logs:/var/helper/gitlab \
 -v /data/gitlab/data:/var/opt/gitlab \
 gitlab/gitlab-ce:latest\
 ```
