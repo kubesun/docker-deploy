@@ -1,0 +1,37 @@
+services:
+
+  nginx:
+    image: ccr.ccs.tencentyun.com/sumery/nginx-http3
+    container_name: casdoor-nginx
+    build:
+      context: .
+      dockerfile: .
+      target: final
+    ports:
+      - '8081:8081/udp'
+      - '8081:8081/tcp'
+    networks:
+      - casdoor
+    restart: on-failure:4 # 重启策略，最多重启n次
+    depends_on:
+      - casdoor
+    volumes:
+      - /home/docker/casdoor/conf:/etc/nginx/conf.d
+      - /home/docker/nginx/ssl:/etc/nginx/ssl:ro
+
+  casdoor:
+    image: casbin/casdoor:latest
+    container_name: casdoor
+    networks:
+      - casdoor
+    ports:
+      - "8000:8000"
+    environment:
+      driverName: postgres
+      dbName: casdoor
+#      dataSourceName: "user=postgres password=citus host=citus port=5432 sslmode=disable dbname=casdoor"
+    volumes:
+      - ./:/conf
+
+networks:
+  casdoor:
