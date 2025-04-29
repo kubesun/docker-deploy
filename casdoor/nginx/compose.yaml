@@ -1,6 +1,6 @@
 services:
 
-  nginx:
+  casdoor-nginx:
     image: ccr.ccs.tencentyun.com/sumery/nginx-http3
     container_name: casdoor-nginx
     build:
@@ -31,7 +31,7 @@ services:
       dbName: casdoor
 #      dataSourceName: "user=postgres password=citus host=citus port=5432 sslmode=disable dbname=casdoor"
     volumes:
-      - ./:/conf
+      - ./app:/conf
 
 networks:
   casdoor:

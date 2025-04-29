@@ -3,6 +3,7 @@
 set -o posix errexit -o pipefail
 
 mkdir /home/docker/casdoor/conf
+mkdir /home/docker/casdoor/app
 cd /home/docker/casdoor || exit
 
 # 前端端口
@@ -12,19 +13,19 @@ CASDOOR_BACKEND_ENDPOINT=http://casdoor:8000
 
 # Casdoor 的 app.conf 配置文件, 具体编写参考https://casdoor.org/zh/docs/basic/server-installation
 # 这里只列出常用的配置项
-# redis 地址, 如果包含密码则使用: redis_addr:3028,username,password 格式, 不需要则填空字符串
-REDIS_ENDPOINT=
+# redis 地址, 如果包含密码则使用: redis_addr:6379,username,password 格式, 不需要则填空字符串
+REDIS_ENDPOINT=redis_addr:6379
 # 域名, 例如: example.com
-DOMAIN=
+DOMAIN=example.com
 # 数据库类型, 例如: mysql, postgres, sqlite
-DRIVER_NAME=
+DRIVER_NAME=postgres
 # 数据库连接地址字符串
-DATA_SOURCE_NAME=
+DATA_SOURCE_NAME=user=postgres password=postgres host=postgres port=5432 sslmode=disable dbname=casdoor
 
 cat > compose.yml <<EOF
 services:
 
-  nginx:
+  casdoor-nginx:
     image: ccr.ccs.tencentyun.com/sumery/nginx-http3
     container_name: casdoor-nginx
     build:
@@ -36,10 +37,9 @@ services:
       - '8081:8081/tcp'
     networks:
       - casdoor
-    # 环境变量
-    environment:
-      DOMAIN: ${DOMAIN} # 这里需要替换成你的域名
     restart: on-failure:4 # 重启策略，最多重启n次
+    depends_on:
+      - casdoor
     volumes:
       - /home/docker/casdoor/conf:/etc/nginx/conf.d
       - /home/docker/nginx/ssl:/etc/nginx/ssl:ro
@@ -52,11 +52,11 @@ services:
     ports:
       - "8000:8000"
     environment:
-      DRIVER_NAME: postgres
+      driverName: postgres
       dbName: casdoor
-#      DATA_SOURCE_NAME: "user=postgres password=citus host=citus port=5432 sslmode=disable dbname=casdoor"
+#      dataSourceName: "user=postgres password=citus host=citus port=5432 sslmode=disable dbname=casdoor"
     volumes:
-      - ./:/conf
+      - ./app:/conf
 
 networks:
   casdoor:
@@ -107,7 +107,7 @@ server {
 }
 EOF
 
-cat > app.conf <<EOF
+cat > app/app.conf <<EOF
 appname = casdoor
 httpport = 8000
 runmode = prod
@@ -121,13 +121,13 @@ redisEndpoint = ${REDIS_ENDPOINT}
 defaultStorageProvider =
 isCloudIntranet = false
 authState = "casdoor"
-socks5Proxy = "127.0.0.1:7890"
+socks5Proxy = "127.0.0.1:10808"
 verificationCodeTimeout = 10
 initScore = 0
 logPostOnly = true
 isUsernameLowered = false
-origin = https://${DOMAIN}:${CASDOOR_FRENTEND_PORT}
-originFrontend =
+origin = ${CASDOOR_BACKEND_ENDPOINT}
+originFrontend = https://${DOMAIN}:${CASDOOR_FRENTEND_PORT}
 staticBaseUrl = "https://cdn.casbin.org"
 isDemoMode = false
 batchSize = 100
@@ -147,6 +147,7 @@ initDataFile = "./init_data.json"
 frontendBaseDir = "../cc_0"
 EOF
 
+docker compose down
 docker compose up -d
+sleep 3
 docker compose logs
-
