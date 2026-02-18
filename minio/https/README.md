@@ -1,23 +1,4 @@
-# Minio 开发自签TLS
-
-## 生成证书
-
-```shell
- ./gen.sh
-```
-
-## 启动
-
-```shell
-mkdir -p /home/docker/minio/data
-mkdir -p /home/docker/minio/tls
-
-mv ./* /home/docker/minio
-
-docker compose up -d
-```
-
-## TLS
+# TLS
 
 1. 在minio目录下创建一个目录用于存储tls文件
     ```shell
