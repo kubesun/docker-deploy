@@ -1,0 +1,30 @@
+[
+  {
+    "database": "book",
+    "index": "book_index",
+    "setting": {
+      "number_of_shards": 1,
+      "number_of_replicas": 0
+    },
+    "nodes": {
+      "table": "book",
+      "schema": "my_book_library",
+      "columns": [
+        "id",
+        "isbn",
+        "title"
+      ],
+      "transform": {
+        "mapping": {
+          "isbn": {
+            "type": "keyword"
+          },
+          "title": {
+            "type": "text",
+            "analyzer": "standard"
+          }
+        }
+      }
+    }
+  }
+]

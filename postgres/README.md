@@ -1,37 +1,29 @@
 ## Docker
 
-cmd:
-```shell
-mkdir -p /home/postgres/data
-chmod -R 777 /home/postgres/data
-docker run \
--d \
---restart=always \
---name postgres \
--v /home/postgres/data:/var/lib/postgresql/data \
--e POSTGRES_PASSWORD=msdnmm \
--e POSTGRES_DB=postgres \
--p 5432:5432 \
-postgres
-```
 
-`docker-compose.yml`
+`compose.yml`
  ```yml
-version: '3'
-
 services:
+
   postgres:
     container_name: postgres
-    image: postgres
+    image: postgres:18-alpine
     restart: always
     volumes:
-      - /home/postgres/data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+      - ./conf/postgresql.conf:/etc/postgresql/postgresql.conf
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=msdnmm
       - POSTGRES_DB=root
     ports:
-      - 5432:5432
+      - "5432:5432"
+    command:
+      - -c
+      - 'config_file=/etc/postgresql/postgresql.conf'
+volumes:
+  postgres_data:
+
 ```
 
 ## 测试连接

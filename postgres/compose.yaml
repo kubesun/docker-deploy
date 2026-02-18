@@ -1,14 +1,20 @@
 services:
+
   postgres:
-    container_name: postgres17.4
-    image: postgres:17.4-alpine
+    container_name: postgres
+    image: postgres:18-alpine
     restart: always
     volumes:
-      - /home/docker/postgres/data:/var/lib/postgresql/data
-#      - ~/docker/postgres/data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+      - ./conf/postgresql.conf:/etc/postgresql/postgresql.conf
     environment:
-      - POSTGRES_USER=postgres
+      - POSTGRES_USER=root
       - POSTGRES_PASSWORD=msdnmm
       - POSTGRES_DB=root
     ports:
       - "5432:5432"
+    command:
+      - -c
+      - 'config_file=/etc/postgresql/postgresql.conf'
+volumes:
+  postgres_data:

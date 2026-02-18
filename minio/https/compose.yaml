@@ -1,6 +1,8 @@
 services:
   minio:
-    image: quay.io/minio/minio
+    #image: quay.io/minio/minio
+    # https://mp.weixin.qq.com/s/HJf5r96TkDQRdYkvOCofrA
+    image: pgsty/minio
     container_name: minio
     ports:
       - "9000:9000"
